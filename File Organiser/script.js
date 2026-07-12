@@ -1,3 +1,20 @@
+let usageCount = localStorage.getItem('siteUsageCount') ? parseInt(localStorage.getItem('siteUsageCount')) : 0;
+
+// Update the visual text safely
+function updateCounterUI() {
+  const counterNumEl = document.getElementById('useCountNumber');
+  if (counterNumEl) {
+    counterNumEl.textContent = usageCount;
+  }
+}
+
+// Run immediately when the page finishes loading
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateCounterUI);
+} else {
+  updateCounterUI();
+}
+
 // list of subjects we can recognize from the filename
 // add more keywords here if your files use different course codes
 const subjects = {
@@ -164,6 +181,12 @@ async function organizeFiles() {
   organizeBtn.textContent = "Working...";
   progressBox.classList.remove("hidden");
   resultsBox.classList.add("hidden");
+
+  if (chosenFiles && chosenFiles.length > 0) {
+    usageCount++;
+    localStorage.setItem('siteUsageCount', usageCount);
+    updateCounterUI(); // Calls our updated UI function safely
+  }
 
   let seenHashes = {};
   let movedCount = 0;
