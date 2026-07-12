@@ -200,6 +200,22 @@ button:disabled {
   margin-top: 10px;
 }
 
+.usage-counter {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 13px;
+  color: #6b1f3d;
+  border: 2px solid #f9b1ce;
+  box-shadow: 0 4px 10px rgba(230, 100, 150, 0.15);
+  font-weight: bold;
+}
+
+
 /* small phones: tighten things up a bit more */
 @media (max-width: 420px) {
   body {
@@ -214,5 +230,12 @@ button:disabled {
   button {
     font-size: 13px;
     padding: 9px 14px;
+  }
+  .usage-counter {
+    position: static;
+    display: block;
+    width: fit-content;
+    margin: 0 auto 15px auto;
+    text-align: center;
   }
 }
