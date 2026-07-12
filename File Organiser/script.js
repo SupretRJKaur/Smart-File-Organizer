@@ -1,6 +1,13 @@
-let usageCount = localStorage.getItem('siteUsageCount') ? parseInt(localStorage.getItem('siteUsageCount')) : 0;
+// =================================================================
+// 1. GLOBAL REAL-TIME COUNTER SETUP (Cloud Persistent)
+// =================================================================
 
-// Update the visual text safely
+const MY_BUCKET_NAME = "my_smart_file_organizer_2026_unique"; 
+const COUNTER_API_URL = `https://kvdb.io/${MY_BUCKET_NAME}/uses_count`;
+const GET_API_URL = `https://kvdb.io/${MY_BUCKET_NAME}/uses_count`;
+
+let usageCount = 0;
+
 function updateCounterUI() {
   const counterNumEl = document.getElementById('useCountNumber');
   if (counterNumEl) {
@@ -8,12 +15,32 @@ function updateCounterUI() {
   }
 }
 
-// Run immediately when the page finishes loading
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateCounterUI);
-} else {
-  updateCounterUI();
+async function fetchGlobalCount() {
+  try {
+    let response = await fetch(GET_API_URL);
+    if (!response.ok) {
+      usageCount = 0;
+    } else {
+      let textData = await response.text();
+      usageCount = parseInt(textData) || 0;
+    }
+    updateCounterUI();
+  } catch (err) {
+    console.log("Offline or server error, switching to device memory:", err);
+    usageCount = localStorage.getItem('siteUsageCountFallback') ? parseInt(localStorage.getItem('siteUsageCountFallback')) : 0;
+    updateCounterUI();
+  }
 }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', fetchGlobalCount);
+} else {
+  fetchGlobalCount();
+}
+
+// =================================================================
+// 2. YOUR ORIGINAL LOGIC CONTINUES BELOW
+// =================================================================
 
 // list of subjects we can recognize from the filename
 // add more keywords here if your files use different course codes
@@ -78,8 +105,6 @@ function findSubject(words) {
 }
 
 // go through all files and figure out which subject folder each one belongs to
-// files that don't match a known subject get grouped by whatever word repeats
-// across other unmatched files, otherwise they go in Misc
 function groupFiles(files) {
   let plan = files.map(f => ({ ...f, subject: findSubject(f.words) }));
 
@@ -182,10 +207,21 @@ async function organizeFiles() {
   progressBox.classList.remove("hidden");
   resultsBox.classList.add("hidden");
 
+  // =================================================================
+  // 3. INCREMENT GLOBAL COUNTER (Files check hone par hi chalega)
+  // =================================================================
   if (chosenFiles && chosenFiles.length > 0) {
-    usageCount++;
-    localStorage.setItem('siteUsageCount', usageCount);
-    updateCounterUI(); // Calls our updated UI function safely
+    try {
+      usageCount++; 
+      await fetch(COUNTER_API_URL, {
+        method: 'POST',
+        body: usageCount.toString()
+      });
+      updateCounterUI();
+    } catch (err) {
+      localStorage.setItem('siteUsageCountFallback', usageCount);
+      updateCounterUI();
+    }
   }
 
   let seenHashes = {};
