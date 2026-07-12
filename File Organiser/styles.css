@@ -1,0 +1,218 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Fira Code', Consolas, Monaco, monospace;
+  background: #ebd1f2;
+  color: #222;
+  margin: 0;
+  padding: 40px 16px;
+}
+
+.container {
+  max-width: 650px;
+  width: 100%;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* the tab is a normal element now, sitting right above the drop-zone.
+   its height just grows with the content, so nothing below it needs
+   guessing at pixel offsets */
+.folder-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  width: fit-content;
+  background: #f9b1ce;
+  border-radius: 10px 10px 0 0;
+  padding: 6px 18px;
+  margin: 30px 0 0;
+}
+
+.folder-tab .folder-icon {
+  font-size: clamp(20px, 5vw, 28px);
+  flex-shrink: 0;
+}
+
+.folder-tab h1 {
+  margin: 0;
+  font-size: clamp(16px, 4.5vw, 24px);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #3a1020;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.drop-zone {
+  position: relative;
+  border: none;
+  border-radius: 0 18px 18px 18px;
+  padding: 24px 20px 30px;
+  text-align: center;
+  margin: 0 0 20px;
+  background: linear-gradient(160deg, #fac5dc 0%, #f8a9c9 55%, #ed639c 100%);
+  box-shadow: 0 10px 20px rgba(230, 100, 150, 0.25);
+}
+
+/* description sits inside the folder body, above the divider line */
+.folder-desc p {
+  margin: 2px 0;
+  font-size: clamp(13px, 3.2vw, 16px);
+  color: #6b1f3d;
+  overflow-wrap: break-word;
+}
+
+/* real divider now, instead of an absolutely positioned line -
+   it just falls right after the description, wherever that ends up,
+   so it always sits near the top of the folder instead of drifting */
+.divider {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 2px;
+  margin: 14px 4px 18px;
+}
+
+.drop-zone.dragover {
+  box-shadow: 0 10px 26px rgba(230, 100, 150, 0.4);
+  transform: translateY(-2px);
+}
+
+.drop-zone p {
+  margin: 6px 0;
+  color: #6b1f3d;
+  font-size: clamp(13px, 3.5vw, 16px);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+button {
+  background: #f15fa6;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 4px;
+  max-width: 100%;
+}
+
+button:hover {
+  background: #f115af;
+}
+
+button:disabled {
+  background: #f73ab8;
+  cursor: not-allowed;
+}
+
+#organizeBtn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 15px;
+}
+
+#fileCount {
+  text-align: center;
+  color: #880505;
+  font-size: 14px;
+}
+
+#progressBox {
+  margin-top: 20px;
+}
+
+.progress-bar {
+  background: #cac8c8;
+  border-radius: 5px;
+  height: 12px;
+  overflow: hidden;
+}
+
+#progressFill {
+  background: #76c862;
+  height: 100%;
+  width: 0%;
+}
+
+#progressText {
+  text-align: center;
+  font-size: 14px;
+  color: #aa2020;
+}
+
+#statusText {
+  text-align: center;
+  font-size: 14px;
+  color: #58029e;
+  min-height: 18px;
+  overflow-wrap: break-word;
+  padding: 0 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+.folder-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.folder-item {
+  background: #faf8c4;
+  border: 1px solid #cfd9e8;
+  border-radius: 5px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.folder-item b {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+#downloadBtn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* small phones: tighten things up a bit more */
+@media (max-width: 420px) {
+  body {
+    padding: 20px 10px;
+  }
+  .container {
+    padding: 14px;
+  }
+  .drop-zone {
+    padding: 20px 14px 24px;
+  }
+  button {
+    font-size: 13px;
+    padding: 9px 14px;
+  }
+}

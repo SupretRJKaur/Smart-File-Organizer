@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Organizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="folder-tab">
+      <span class="folder-icon">📁</span>
+      <h1>Smart File Organizer</h1>
+    </div>
+
+    <div id="dropZone" class="drop-zone">
+      <div class="folder-desc">
+        <p>Clean up any messy folder in one click.</p>
+        <p>Everything runs in your browser, nothing gets uploaded anywhere.</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <p>Drag and drop files here</p>
+      <p>or</p>
+      <div class="btn-row">
+        <button id="pickFilesBtn">Choose Files</button>
+        <button id="pickFolderBtn">Choose Folder</button>
+      </div>
+      <input type="file" id="fileInput" multiple hidden>
+      <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+    </div>
+
+    <p id="fileCount"></p>
+
+    <button id="organizeBtn" disabled>🚀 Organize Files</button>
+
+    <div id="progressBox" class="hidden">
+      <div class="progress-bar"><div id="progressFill"></div></div>
+      <p id="progressText"></p>
+    </div>
+
+    <p id="statusText"></p>
+
+    <div id="resultsBox" class="hidden">
+      <h2>Done!</h2>
+      <div id="folderList" class="folder-list"></div>
+
+      <p>
+        Moved: <span id="movedCount">0</span> |
+        Duplicates skipped: <span id="dupCount">0</span> |
+        Errors: <span id="errCount">0</span>
+      </p>
+
+      <button id="downloadBtn">Download ZIP</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
