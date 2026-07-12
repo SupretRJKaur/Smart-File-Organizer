@@ -1,10 +1,9 @@
 // =================================================================
-// 1. GLOBAL REAL-TIME COUNTER SETUP (Cloud Persistent)
+// 1. GLOBAL REAL-TIME COUNTER SETUP (Live & Instant Sync)
 // =================================================================
 
-const MY_BUCKET_NAME = "my_smart_file_organizer_2026_unique"; 
-const COUNTER_API_URL = `https://kvdb.io/${MY_BUCKET_NAME}/uses_count`;
-const GET_API_URL = `https://kvdb.io/${MY_BUCKET_NAME}/uses_count`;
+const MY_UNIQUE_KEY = "smart_file_organizer_2026_prod_key";
+const BASE_COUNTER_URL = `https://api.moecounter.org/v1/counter/${MY_UNIQUE_KEY}`;
 
 let usageCount = 0;
 
@@ -15,18 +14,20 @@ function updateCounterUI() {
   }
 }
 
+
 async function fetchGlobalCount() {
   try {
-    let response = await fetch(GET_API_URL);
-    if (!response.ok) {
-      usageCount = 0;
+    let response = await fetch(BASE_COUNTER_URL);
+    if (response.ok) {
+      let data = await response.json();
+      // MoeCounter returns object with count property
+      usageCount = data.count || 0;
     } else {
-      let textData = await response.text();
-      usageCount = parseInt(textData) || 0;
+      usageCount = localStorage.getItem('siteUsageCountFallback') ? parseInt(localStorage.getItem('siteUsageCountFallback')) : 0;
     }
     updateCounterUI();
   } catch (err) {
-    console.log("Offline or server error, switching to device memory:", err);
+    console.log("Network error, reading local fallback", err);
     usageCount = localStorage.getItem('siteUsageCountFallback') ? parseInt(localStorage.getItem('siteUsageCountFallback')) : 0;
     updateCounterUI();
   }
@@ -37,7 +38,6 @@ if (document.readyState === 'loading') {
 } else {
   fetchGlobalCount();
 }
-
 // =================================================================
 // 2. YOUR ORIGINAL LOGIC CONTINUES BELOW
 // =================================================================
