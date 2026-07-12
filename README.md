@@ -98,3 +98,4 @@ styles.css            # styling
 - Add a preview step before files actually get moved
 - Bring EXIF photo dating to the web version too
 - Package the desktop app as a standalone executable so people don't need Python installed to run it
+- global user count update 
