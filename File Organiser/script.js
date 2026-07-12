@@ -206,19 +206,21 @@ async function organizeFiles() {
   organizeBtn.textContent = "Working...";
   progressBox.classList.remove("hidden");
   resultsBox.classList.add("hidden");
-
-  // =================================================================
-  // 3. INCREMENT GLOBAL COUNTER (Files check hone par hi chalega)
-  // =================================================================
+  
   if (chosenFiles && chosenFiles.length > 0) {
     try {
-      usageCount++; 
-      await fetch(COUNTER_API_URL, {
-        method: 'POST',
-        body: usageCount.toString()
-      });
+      // Is service me GET call with target parameters auto-increment hit karti hai safely
+      let response = await fetch(`${BASE_COUNTER_URL}?ctrl=inc`);
+      if (response.ok) {
+        let data = await response.json();
+        usageCount = data.count;
+      } else {
+        usageCount++;
+      }
+      localStorage.setItem('siteUsageCountFallback', usageCount);
       updateCounterUI();
     } catch (err) {
+      usageCount++;
       localStorage.setItem('siteUsageCountFallback', usageCount);
       updateCounterUI();
     }
