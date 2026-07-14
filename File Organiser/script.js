@@ -1,46 +1,39 @@
-// =================================================================
-// 1. GLOBAL REAL-TIME COUNTER SETUP (Live & Instant Sync)
-// =================================================================
 
-const MY_UNIQUE_KEY = "smart_file_organizer_2026_prod_key";
-const BASE_COUNTER_URL = `https://api.moecounter.org/v1/counter/${MY_UNIQUE_KEY}`;
+const COUNTER_NAMESPACE = "supretrjkaur-smart-file-organizer";
+const COUNTER_KEY = "files-organized";
 
-let usageCount = 0;
-
-function updateCounterUI() {
+function updateCounterUI(value) {
   const counterNumEl = document.getElementById('useCountNumber');
-  if (counterNumEl) {
-    counterNumEl.textContent = usageCount;
+  if (counterNumEl && value !== undefined && value !== null) {
+    counterNumEl.textContent = value;
   }
 }
 
-
-async function fetchGlobalCount() {
-  try {
-    let response = await fetch(BASE_COUNTER_URL);
-    if (response.ok) {
-      let data = await response.json();
-      // MoeCounter returns object with count property
-      usageCount = data.count || 0;
-    } else {
-      usageCount = localStorage.getItem('siteUsageCountFallback') ? parseInt(localStorage.getItem('siteUsageCountFallback')) : 0;
-    }
-    updateCounterUI();
-  } catch (err) {
-    console.log("Network error, reading local fallback", err);
-    usageCount = localStorage.getItem('siteUsageCountFallback') ? parseInt(localStorage.getItem('siteUsageCountFallback')) : 0;
-    updateCounterUI();
-  }
+// on page load, just READ the current global count (this does not add to it,
+// it only shows what other people have already run)
+function loadCurrentCount() {
+  fetch(`https://abacus.jasoncameron.dev/get/${COUNTER_NAMESPACE}/${COUNTER_KEY}`)
+    .then(res => {
+      if (!res.ok) throw new Error("counter not created yet");
+      return res.json();
+    })
+    .then(data => updateCounterUI(data.value))
+    .catch(() => updateCounterUI(0)); // first ever visit, nothing created yet
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', fetchGlobalCount);
+// actually increments the global count by 1, for everyone
+function bumpGlobalCount() {
+  fetch(`https://abacus.jasoncameron.dev/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`)
+    .then(res => res.json())
+    .then(data => updateCounterUI(data.value))
+    .catch(() => {}); // if the counter service is down, just don't update - no big deal
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadCurrentCount);
 } else {
-  fetchGlobalCount();
+  loadCurrentCount();
 }
-// =================================================================
-// 2. YOUR ORIGINAL LOGIC CONTINUES BELOW
-// =================================================================
 
 // list of subjects we can recognize from the filename
 // add more keywords here if your files use different course codes
@@ -105,6 +98,8 @@ function findSubject(words) {
 }
 
 // go through all files and figure out which subject folder each one belongs to
+// files that don't match a known subject get grouped by whatever word repeats
+// across other unmatched files, otherwise they go in Misc
 function groupFiles(files) {
   let plan = files.map(f => ({ ...f, subject: findSubject(f.words) }));
 
@@ -206,24 +201,9 @@ async function organizeFiles() {
   organizeBtn.textContent = "Working...";
   progressBox.classList.remove("hidden");
   resultsBox.classList.add("hidden");
-  
+
   if (chosenFiles && chosenFiles.length > 0) {
-    try {
-      // Is service me GET call with target parameters auto-increment hit karti hai safely
-      let response = await fetch(`${BASE_COUNTER_URL}?ctrl=inc`);
-      if (response.ok) {
-        let data = await response.json();
-        usageCount = data.count;
-      } else {
-        usageCount++;
-      }
-      localStorage.setItem('siteUsageCountFallback', usageCount);
-      updateCounterUI();
-    } catch (err) {
-      usageCount++;
-      localStorage.setItem('siteUsageCountFallback', usageCount);
-      updateCounterUI();
-    }
+    bumpGlobalCount();
   }
 
   let seenHashes = {};
